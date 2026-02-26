@@ -71,11 +71,12 @@ def delete_student(id):
 # SEARCH STUDENT
 @app.route("/search", methods=["POST"])
 def search():
+    
     name = request.form["name"]
     students = Student.query.filter(Student.name.like(f"%{name}%")).all()
     return render_template("index.html", students=students)
 
 
 if __name__ == "__main__":
-    
+
     app.run(debug=True)

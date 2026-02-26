@@ -1,26 +1,42 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Student Management System</title>
+{% extends "base.html" %}
 
-    <!-- Bootstrap CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+{% block content %}
 
-</head>
-<body>
+<form method="POST" action="/search" class="d-flex mb-3">
+    <input type="text" name="name" class="form-control me-2" placeholder="Search by name">
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
 
-<nav class="navbar navbar-dark bg-dark">
-  <div class="container-fluid">
-    <span class="navbar-brand mb-0 h1">Student Management System</span>
-  </div>
-</nav>
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Course</th>
+            <th>Created</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for student in students %}
+        <tr>
+            <td>{{ student.id }}</td>
+            <td>{{ student.name }}</td>
+            <td>{{ student.email }}</td>
+            <td>{{ student.course }}</td>
+            <td>{{ student.created_at.strftime("%Y-%m-%d") }}</td>
+            <td>
+                <a href="/update/{{ student.id }}" class="btn btn-warning btn-sm">Edit</a>
+                <a href="/delete/{{ student.id }}" 
+                   class="btn btn-danger btn-sm"
+                   onclick="return confirm('Are you sure?');">
+                   Delete
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 
-<div class="container mt-5">
-    <div class="card shadow p-4">
-        <h3 class="text-center text-primary">Welcome Pallavi 👩‍💻</h3>
-        <p class="text-center">Your Flask project is running successfully 🚀</p>
-    </div>
-</div>
-
-</body>
-</html>
+{% endblock %}

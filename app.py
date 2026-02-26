@@ -1,62 +1,80 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from config import Config
 from models import db, Student
-
+import os
 
 app = Flask(__name__)
 app.config.from_object(Config)
 
 db.init_app(app)
 
+# Create DB if not exists
+with app.app_context():
+    if not os.path.exists("instance"):
+        os.makedirs("instance")
+    db.create_all()
 
-# Home Page
-@app.route('/')
-def home():
+
+# HOME - VIEW STUDENTS
+@app.route("/")
+def index():
     students = Student.query.all()
-    return render_template("view_students.html", students=students)
+    return render_template("index.html", students=students)
 
-# Add Student
-@app.route('/add', methods=['GET', 'POST'])
+
+# ADD STUDENT
+@app.route("/add", methods=["GET", "POST"])
 def add_student():
-    if request.method == 'POST':
-        name = request.form['name']
-        email = request.form['email']
-        course = request.form['course']
-        marks = request.form['marks']
+    if request.method == "POST":
+        name = request.form["name"]
+        email = request.form["email"]
+        course = request.form["course"]
 
-        new_student = Student(name=name, email=email, course=course, marks=marks)
+        new_student = Student(name=name, email=email, course=course)
         db.session.add(new_student)
         db.session.commit()
 
-        return redirect(url_for('home'))
+        flash("Student added successfully!", "success")
+        return redirect(url_for("index"))
 
     return render_template("add_student.html")
 
-# Update Student
-@app.route('/update/<int:id>', methods=['GET', 'POST'])
+
+# UPDATE STUDENT
+@app.route("/update/<int:id>", methods=["GET", "POST"])
 def update_student(id):
     student = Student.query.get_or_404(id)
 
-    if request.method == 'POST':
-        student.name = request.form['name']
-        student.email = request.form['email']
-        student.course = request.form['course']
-        student.marks = request.form['marks']
+    if request.method == "POST":
+        student.name = request.form["name"]
+        student.email = request.form["email"]
+        student.course = request.form["course"]
 
         db.session.commit()
-        return redirect(url_for('home'))
+        flash("Student updated successfully!", "info")
+        return redirect(url_for("index"))
 
-    return render_template("update_student.html", student=student)
+    return render_template("add_student.html", student=student)
 
-# Delete Student
-@app.route('/delete/<int:id>')
+
+# DELETE STUDENT
+@app.route("/delete/<int:id>")
 def delete_student(id):
     student = Student.query.get_or_404(id)
     db.session.delete(student)
     db.session.commit()
-    return redirect(url_for('home'))
 
-if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
+    flash("Student deleted successfully!", "danger")
+    return redirect(url_for("index"))
+
+
+# SEARCH STUDENT
+@app.route("/search", methods=["POST"])
+def search():
+    name = request.form["name"]
+    students = Student.query.filter(Student.name.like(f"%{name}%")).all()
+    return render_template("index.html", students=students)
+
+
+if __name__ == "__main__":
     app.run(debug=True)

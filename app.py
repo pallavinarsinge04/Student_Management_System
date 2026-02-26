@@ -7,6 +7,7 @@ app.config.from_object(Config)
 
 db.init_app(app)
 
+
 # Home Page
 @app.route('/')
 def home():

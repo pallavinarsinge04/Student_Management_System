@@ -1,0 +1,29 @@
+body {
+    font-family: Arial;
+    margin: 40px;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table, th, td {
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+.alert {
+    padding: 10px;
+    margin: 10px 0;
+}
+
+.success { background: lightgreen; }
+.danger { background: pink; }
+.info { background: lightblue; }

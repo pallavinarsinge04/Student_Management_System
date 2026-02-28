@@ -1,43 +1,45 @@
 {% extends "base.html" %}
-
 {% block content %}
 
-<form method="POST" action="/search" class="d-flex mb-3">
-    <input type="text" name="name" class="form-control me-2" placeholder="Search by name">
-    <button type="submit" class="btn btn-primary">Search</button>
+<h3>Student List</h3>
+
+<form method="GET">
+    <input type="text" name="search" placeholder="Search..." value="{{ search or '' }}">
+    <button type="submit">Search</button>
 </form>
 
-<table class="table table-bordered table-striped">
-    <thead class="table-dark">
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Course</th>
-            <th>Created</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for student in students %}
-        <tr>
-            <td>{{ student.id }}</td>
-            <td>{{ student.name }}</td>
-            <td>{{ student.email }}</td>
-            <td>{{ student.course }}</td>
-            <td>{{ student.created_at.strftime("%Y-%m-%d") }}</td>
-            <td>
-                <a href="/update/{{ student.id }}" class="btn btn-warning btn-sm">Edit</a>
-                <a href="/delete/{{ student.id }}" 
-                   class="btn btn-danger btn-sm"
-                   onclick="return confirm('Are you sure?');">
-                   Delete
-                </a>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
+<a href="{{ url_for('add_student') }}">Add Student</a>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Course</th>
+        <th>Actions</th>
+    </tr>
+    {% for student in students.items %}
+    <tr>
+        <td>{{ student.id }}</td>
+        <td>{{ student.name }}</td>
+        <td>{{ student.email }}</td>
+        <td>{{ student.course }}</td>
+        <td>
+            <a href="{{ url_for('edit_student', id=student.id) }}">Edit</a>
+            <a href="{{ url_for('delete_student', id=student.id) }}">Delete</a>
+        </td>
+    </tr>
+    {% endfor %}
 </table>
 
+<div>
+    {% if students.has_prev %}
+        <a href="?page={{ students.prev_num }}">Previous</a>
+    {% endif %}
+
+    {% if students.has_next %}
+        <a href="?page={{ students.next_num }}">Next</a>
+    {% endif %}
+</div>
 
 {% endblock %}
